@@ -1,0 +1,137 @@
+body, ul, li, h1, figure, div{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    font-family:inherit;
+    vertical-align: baseline;
+    text-decoration: none;
+
+}
+body{
+    font-family: 'Raleway',sans-serif;
+    margin: auto;
+    text-align: center;
+
+}
+
+h1{
+    font-size: 50px;
+}
+ul {
+    list-style: none;
+}
+
+.unplayed:hover{
+    background: lightgrey;
+}
+
+.grid{
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items:center;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.pos{
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    font-family: 'Raleway',
+    sans-serif;
+    width: 150px;
+    height: 150px;
+    padding: 10px;
+    border: 1px solid white;
+    background-color: grey;
+    font-size: 100px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.X-played {
+    color: red;
+    background-color: lightcoral;
+}
+
+.O-played {
+    color: blue;
+    background-color: lightblue;
+}
+.display-winner{
+    background-color: white;
+    border: 5px solid black;
+    z-index: 10;
+    width: 300px;
+    height:auto;
+    font-size: 30px;
+}
+.modal{
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    max-width: 100%;
+    max-height:100%;
+    transform: translate(-50%, -50%);
+}
+.opponent-selection{
+    display: none;
+}
+.human-opponent,
+.ai-opponent {
+    display: none;
+}
+/*.ai-opponent>label, .human-opponent>label{
+
+}*/
+.new-game-form{
+    display: flex;
+    border: 5px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: whitesmoke;
+}
+
+.new-game-form,
+.play-AI-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.fa{
+    padding:0 10px;
+    font-size: 20px;
+}
+.fa:hover{
+    cursor: pointer;
+    color: lightgray;
+}
+
+.start-game-button{
+    margin: 10px 0;
+}
+.new-game-form label{
+    padding: 10px;
+}
+.selection-dropdown{
+    width: 200px;
+    padding:10px;
+}
+.display-menu{
+    display: flex;
+}
+.hidden{
+    display: none;
+}
+.hide-menu{
+    display:none;
+}
