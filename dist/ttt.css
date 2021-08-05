@@ -24,7 +24,7 @@ ul {
 }
 
 .unplayed:hover{
-    background: lightgrey;
+
 }
 
 .grid{
@@ -54,15 +54,7 @@ ul {
     cursor: pointer;
 }
 
-.X-played {
-    color: red;
-    background-color: lightcoral;
-}
 
-.O-played {
-    color: blue;
-    background-color: lightblue;
-}
 .display-winner{
     background-color: white;
     border: 5px solid black;
@@ -70,6 +62,14 @@ ul {
     width: 300px;
     height:auto;
     font-size: 30px;
+}
+.center{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    max-width: 100%;
+    max-height:100%;
+    transform: translate(-50%, -50%);
 }
 .modal{
     position: fixed;
@@ -132,6 +132,26 @@ ul {
 .hidden{
     display: none;
 }
-.hide-menu{
-    display:none;
+.winner{
+    background-color: yellowgreen;
+}
+
+.X-hovered{
+    background: lightcoral;
+}
+
+.O-hovered{
+    background: lightblue;
+}
+.hovered{
+    background: lightgray;
+}
+.X-played {
+    color: red;
+    background-color: lightcoral;
+}
+
+.O-played {
+    color: blue;
+    background-color: lightblue;
 }

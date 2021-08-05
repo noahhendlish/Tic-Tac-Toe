@@ -43,6 +43,35 @@ class Board{
         return false;
     }
 
+    //returns array of winning positions
+    winningPositions(mark){
+        let three_adjacent =[
+        [[0,0], [1,1], [2,2]], //diagonals
+        [[0,2], [1,1], [2,0]],
+
+        [[0,0], [0,1], [0,2]], //horizontals
+        [[1,0], [1,1], [1,2]],
+        [[2,0], [2,1], [2,2]],
+
+        [[0,0], [1,0], [2,0]], //verticals
+        [[0,1], [1,1], [2,1]],
+        [[0,2], [1,2], [2,2]]
+        ]
+        let winningPositions = []
+        for(let group = 0; group < three_adjacent.length; group++){
+            winningPositions = [];
+            three_adjacent[group].forEach(pos=>{
+                if(this.getMark(pos) === mark){
+                    winningPositions.push(pos);
+                }
+            });
+            if(winningPositions.length === 3){
+                return winningPositions;
+            }
+        }
+        return [];
+    }
+
     gameOver(){
         let validPositions = this.validPositions();
         if(this.won('X') || this.won('O') || (validPositions.length === 0)){

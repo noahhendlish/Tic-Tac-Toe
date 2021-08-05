@@ -26,7 +26,6 @@
 
   <body>
 
-    <h1 class = 'ttt-header'>Tic Tac Toe</h1>
     <div class = 'display-winner modal hidden'></div>
     <div class ='game-menu modal'>
 
@@ -39,7 +38,7 @@
           </optgroup>
       </select>
 
-      <div class = 'play-AI-options hide-menu'>
+      <div class = 'play-AI-options hidden'>
         <label class = 'ai-option' for="player-mark">Choose Your Mark: </label>
         <select class = 'selection-dropdown ai-option' name="player-mark" id="player-mark">
           <optgroup>
@@ -66,8 +65,10 @@
       </form>
     </div>
 
-    <figure class="ttt"></figure>
-    <button class = 'new-game-button'>New Game</button>
+    <figure class="ttt center">
+      <h1 class = 'ttt-header'>Tic Tac Toe</h1>
+
+    </figure>
 
   </body>
 </html>

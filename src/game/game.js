@@ -18,6 +18,13 @@ class Game{
     isOver(){
         return this.board.gameOver();
     }
+
+    winningPositions(mark){
+        if (this.winner() !== null){
+            return this.board.winningPositions(mark);
+        }
+    }
+
     winner(){
         return this.board.winner();
     }
