@@ -26,6 +26,11 @@ ul {
 .unplayed:hover{
 
 }
+input[type="button"] {
+    font-family: 'Raleway',
+    sans-serif;
+    font-size: 16px;
+}
 
 .grid{
     display: flex;
@@ -55,12 +60,16 @@ ul {
 }
 
 
-.display-winner{
+.winner-modal{
     background-color: white;
     border: 5px solid black;
     z-index: 10;
     width: 300px;
     height:auto;
+    font-size: 30px;
+    padding: 10px;
+}
+.winner-header{
     font-size: 30px;
 }
 .center{
@@ -132,9 +141,6 @@ ul {
 .hidden{
     display: none;
 }
-.winner{
-    background-color: yellowgreen;
-}
 
 .X-hovered{
     background: lightcoral;
@@ -154,4 +160,13 @@ ul {
 .O-played {
     color: blue;
     background-color: lightblue;
+}
+.X-wins{
+    background-color: red;
+}
+.O-wins{
+    background-color: blue;
+}
+.winner {
+    color: white;
 }

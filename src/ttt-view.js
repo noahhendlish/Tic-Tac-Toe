@@ -50,7 +50,11 @@ class View {
     this.playerHover();
     this.makeMove();
   }
-
+  bindPostGameEventHandlers(){
+    $('.new-game-button').on('click', ()=>{
+      this.startNewGame();
+    });
+  }
   //end game-- display winner at end of game (then resets game-- loads menu)
   endGame(){
       let winner = this.game.winner();
@@ -62,11 +66,9 @@ class View {
         this.highlightWinningSquares(winner);
         win_msg = winner + ' Wins!';
       }
-      $('.display-winner').text(win_msg);
-      $('.display-winner').removeClass('hidden');
-      setTimeout(()=>{
-        this.startNewGame();
-      }, 3000);
+      $('.winner-header').text(win_msg);
+      $('.winner-modal').removeClass('hidden');
+      this.bindPostGameEventHandlers();
   }
 
   highlightWinningSquares(winnerMark){
@@ -75,6 +77,7 @@ class View {
       let winPos = winningPositions[i];
       let $winPos = $(`[data-pos= "${winPos}"]`);
       $winPos.addClass('winner');
+      $winPos.addClass(winnerMark + "-wins");
     }
   }
 
@@ -95,8 +98,8 @@ class View {
     $('.start-game-button').off('click');
     $('.pos').off('click');
     $('ul').off('click');
-    $('.display-winner').text('');
-    $('.display-winner').addClass('hidden');
+    $('.winner-header').text('');
+    $('.winner-modal').addClass('hidden');
     const $pos = $('.pos');
     $('.pos').removeClass('O-hovered');
     $('.pos').removeClass('X-hovered');
@@ -105,6 +108,8 @@ class View {
     $pos.text('');
     $pos.removeClass("X-played");
     $pos.removeClass("O-played");
+    $pos.removeClass("X-wins");
+    $pos.removeClass("O-wins");
   }
   makeAIMove(){
     //if(this.game.ai) called before calling this
