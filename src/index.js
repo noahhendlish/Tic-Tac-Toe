@@ -5,6 +5,7 @@ const Game = require('./game/game.js');
   $(() => {
 
     let $ttt = $('figure.ttt');
-    let view = new View($ttt);
+    let game = new Game();
+    let view = new View($ttt,null);
     view.startNewGame();
   });
