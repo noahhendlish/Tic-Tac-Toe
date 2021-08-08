@@ -1,15 +1,15 @@
 const Game = require('./game.js');
-//const PlayerMark = require('./player.js');
 const readline = require('readline');
 
-//https://mostafa-samir.github.io/Tic-Tac-Toe-AI/
+//allows user to play tic tac toe from the console
 
 const reader = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+
 function loadAndClearConsole(callback){
-     reader.pause();
+    reader.pause();
             let interval = setInterval(function(){ console.log("..."); }, 1000);
             setTimeout(function(){
                 console.clear();
@@ -18,6 +18,7 @@ function loadAndClearConsole(callback){
             }, 2000);
             reader.resume();
 }
+
 function startMenu(){
     console.log("\nWould you like to play against human or AI?\n")
     reader.question("Enter 1 (to play Human) or 2 (to play AI): ", (player) =>{
@@ -74,7 +75,7 @@ function startAIGame(){
         }
     });
 }
-
+//callback to restart game
 function completion() {
     reader.question("Play again? y or n: ", restartGame => {
     if (restartGame === "y") {

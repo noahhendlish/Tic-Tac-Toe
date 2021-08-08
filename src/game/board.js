@@ -4,7 +4,7 @@ class Board{
     constructor(){
         this.grid = Board.makeGrid();
     }
-
+    //make a grid (an array with 3 sub-arrays, where each subarray has 3 null elements)
     static makeGrid(){
         const grid = [];
         for(let i = 0; i < 3; i++){
@@ -15,9 +15,9 @@ class Board{
         }
         return grid;
     }
-
+    //check for win given a mark
     won(mark){
-        let three_adjacent =[
+        let three_adjacent =[ //all possible configurations for a win
         [this.grid[0][0], this.grid[1][1], this.grid[2][2]], //diagonals
         [this.grid[0][2], this.grid[1][1], this.grid[2][0]],
 
@@ -31,11 +31,11 @@ class Board{
         ]
         for(let configs = 0; configs < three_adjacent.length; configs++){
             let count = 0;
-            three_adjacent[configs].forEach(el=>{
+            three_adjacent[configs].forEach(el=>{ //count # of same mark in positions needed for a win
                 if(el === mark){
                     count+=1;
                 }
-            });
+            }); //if 3 in a row, return win
             if(count === 3){
                 return true;
             }
@@ -43,8 +43,12 @@ class Board{
         return false;
     }
 
-    //returns array of winning positions
+    //returns array of winning positions (helpful for highlighting winning positions)
     winningPositions(mark){
+        mark = mark || this.winner();
+        if (mark === null){
+            return [];
+        }
         let three_adjacent =[
         [[0,0], [1,1], [2,2]], //diagonals
         [[0,2], [1,1], [2,0]],
@@ -72,6 +76,7 @@ class Board{
         return [];
     }
 
+    //check if game is over (there is a winner or the board is full)
     gameOver(){
         let validPositions = this.validPositions();
         if(this.won('X') || this.won('O') || (validPositions.length === 0)){
@@ -81,7 +86,7 @@ class Board{
             return false;
         }
     }
-
+    //return winner (check if x won or o won, if tie return null)
     winner(){
         if(this.won('X')){
             return 'X';
@@ -94,6 +99,7 @@ class Board{
         }
     }
 
+    //checks for valid position (useful for console game-play)
     isValid(pos){
         if((pos.length !== 2)){
             console.log("invalid length");
@@ -113,6 +119,7 @@ class Board{
         }
     }
 
+    //returns mark at current position
     getMark(pos){
         if(this.isValid(pos)){
             return this.grid[pos[0]][pos[1]];
@@ -123,10 +130,12 @@ class Board{
         }
     }
 
+    //check if position is empty (null)
     isEmpty(pos){
         return (this.getMark(pos) === null);
     }
 
+    //returns array of valid positions (empty positions)
     validPositions(){
         let positions = [];
         for(let i =0; i < 3; i ++){
@@ -138,7 +147,7 @@ class Board{
         }
         return positions;
     }
-
+    //places a mark at a given position (if it is empty -- otherwise throws error)
     placeMark(pos, mark){
         if(this.isEmpty(pos)){
             this.grid[pos[0]][pos[1]] = mark;
@@ -148,6 +157,7 @@ class Board{
         }
     }
 
+    //print game to console
     print(){
         console.log("    0  1  2");
         for(let row = 0; row < 3; row++){
@@ -167,6 +177,3 @@ class Board{
 }
 Board.marks = ['X', 'O'];
 module.exports = Board;
-
-//let b = new Board();
-//b.print();

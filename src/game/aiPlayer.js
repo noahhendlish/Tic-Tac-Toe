@@ -5,69 +5,67 @@ class AIPlayer{
         this.maxDepth = maxDepth;
         this.nodesMap = new Map();
     }
+    //returns opponents mark
     opponentMark(){
         return this.mark === 'X' ? 'O' : 'X';
     }
+
+    //given an instance of board -- returns next best move (using max/min -- defaults to max possible depth unless maxDepth is set)
     getBestMove(board, max = true, depth = 0){
         if(depth == 0){
             this.nodesMap.clear();
         }
-        if(board.gameOver() || depth === this.maxDepth ) {
-            if(board.winner() === this.mark) {
-                return 100 - depth;
-            } else if (board.winner() === this.opponentMark()) {
-                return -100 + depth;
-            }
-            return 0;
+        if(board.gameOver() || depth === this.maxDepth ) { //if end of game or max depth and...
+            if(board.winner() === this.mark) { //AI gets win
+                return 1000 - depth;
+            } else if (board.winner() === this.opponentMark()) { //opponent gets win
+                return -1000 + depth;
+            }//tie
+            return 0; //no change
         }
-        //MAX/MIN
-        //Initialize best to the lowest possible value if max, highest if min
-            let best = max === true ? -100 : 100;
-            //Loop through all empty cells
+            //MAX/MIN
+            //Initialize best to the lowest possible value if max, highest if min (*uses 1000 for 'infinity')
+            let best = max === true ? -1000 : 1000;
+            //get current player mark (if maximizing --AI, else simulating human/ minimizing)
+            let mark = max === true ? this.mark : this.opponentMark();
+            //Loop through all empty cells on board (having the current player make a move on it and recursively calling getBestMove)
             board.validPositions().forEach(pos => {
-                //Initialize a new board with a copy of our current state
+                //Initialize a new board with a copy of current boards
                 const child = new Board();
                 child.grid = [];
                 board.grid.forEach( (row) => { child.grid.push([...row]) });
-
-                let mark = max === true ? this.mark : this.opponentMark();
-                //Create a child node by inserting the maximizing symbol x into the current empty cell
+                //Create a child node by inserting the current players' mark into the current empty cell
                 child.placeMark(pos, mark);
-
-                //Recursively calling getBestMove this time with the new board and minimizing turn and incrementing the depth
+                //Recursively call getBestMove with new board (after making a move), changing min/max (whose turn it is), and incrementing the depth
                 const nodeValue = this.getBestMove(child, (!max), depth + 1);
-                //Updating best value
-                best = max === true ? Math.max(best, nodeValue): Math.min(best, nodeValue);
-                //If it's the main function call, not a recursive one, map each heuristic value with it's moves indices
+                //Update best value (heuristic value) based on whose turn it is
+                best = (max === true) ? Math.max(best, nodeValue): Math.min(best, nodeValue);
+                //If it's the main function call, map each heuristic value with it's moves indices
                 if (depth == 0) {
-                    //Comma separated indices if multiple moves have the same heuristic value
-                    //let movesArr = [];
+                    //separate pairs of position indices with a '-' if multiple moves have the same heuristic value
                     const moves = this.nodesMap.has(nodeValue)
                         ? this.nodesMap.get(nodeValue) + "-" + (pos)
                         : pos;
                     this.nodesMap.set(nodeValue, moves);
                 }
             });
-            //If it's the main call, return the index of the best move or a random index if multiple indices have the same value
+            //If it's the main call, return the index of the best move
             if (depth == 0) {
-                let returnValue;
-
-                if (typeof this.nodesMap.get(best) == "string") {
-                    let arr = this.nodesMap.get(best).split("-");
+                let bestPosition = this.nodesMap.get(best);
+                //if multiple indices have the same heuristic value (nodesMap value is a string of positions instead of an array), pick a random position
+                if (typeof bestPosition == "string") {
+                    let arr = this.nodesMap.get(best).split("-"); //*positions stored as a string, seperated by '-'
                     let numArr = [];
                     for(let i =0; i < arr.length; i++){
                         numArr.push([parseInt(arr[i][0]), parseInt(arr[i][2])]);
                     }
-                    //console.log(numArr);
                     const rand = Math.floor(Math.random() * numArr.length);
-                    returnValue = numArr[rand];
-                } else {
-                    returnValue = this.nodesMap.get(best);
+                    bestPosition = numArr[rand];
                 }
-                //run a callback after calculation and return the index
-                return returnValue;
+                //return best position
+                return bestPosition;
             }
-            //If recursive return best scored move
+            //If not the main call (recursive call) return best scored move
             return best;
     }
 }

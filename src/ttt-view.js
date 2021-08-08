@@ -6,8 +6,9 @@ class View {
     this.game = game;
     this.setupBoard();
   }
+  //binds menu events
   bindMenuEvents(){
-//enables toggling of AI menu
+  //enables toggling of AI menu
     this.activateAIMenuEvent();
     //hover over square with mouse
     this.replayGameEvent();
@@ -16,11 +17,13 @@ class View {
     this.select2Events();
   }
 
+  //binds game play events
   bindGameEvents(){
     this.makeMoveEvent();
     this.playerHoverEvent();
   }
 
+  //binds all events (game play and menu)
   bindEvents() {
     //EVENTs for:
     this.select2Events();
@@ -37,7 +40,7 @@ class View {
 
   }
   select2Events(){
-    // select2 (drop-downs)
+    // select2 (drop-downs) event handlers (allows control over options selector width and removes the default search from drop down)
     $('.selection-dropdown').select2({
     width: 'resolve',
     minimumResultsForSearch: Infinity
@@ -62,7 +65,6 @@ class View {
   //event handler for new game (after game over)
   replayGameEvent(){
     $('.new-game-button').on('click', ()=>{
-
       $('.winner-modal').fadeOut(500, ()=>{
         $('.mark').fadeOut(500);
         $('.pos').fadeTo(400, 0.4,()=>{
@@ -72,8 +74,6 @@ class View {
           });
         });
       });
-
-
     });
   }
 
@@ -85,7 +85,7 @@ class View {
         const pos = $square.attr('data-pos');
         const selected_position = [parseInt(pos[0]), parseInt(pos[2])];
         let playerMark = this.game.currPlayerMark;
-        //let $dataPosSq = $(`[data-pos= "${selected_position}"]`);
+        //let $dataPosSq = $(`[data-pos= "${selected_position}"]`); //-- another way of getting currentTarget
         //checks if valid move (unplayed square)
         if($square.hasClass("unplayed")){
           $square.removeClass('unplayed');
@@ -111,7 +111,6 @@ class View {
           $square.addClass(playerMark + "-hovered");
       }
     });
-
     $('ul.row').on('mouseleave', 'li.unplayed', (event)=>{
       const $square = $(event.currentTarget);
       let playerMark = this.game.currPlayerMark;
@@ -121,6 +120,7 @@ class View {
     });
   }
 
+  //helper for new game against AI
   playAI(aiMark, aiLevel){
     this.game = new Game(true, aiMark, aiLevel);
     if(aiMark === 'X'){ //X plays first, if AI first, ai makes move
@@ -128,6 +128,7 @@ class View {
     }
   }
 
+  //helper for new game against human
   playHuman(){
     this.game = new Game();
   }
@@ -147,8 +148,7 @@ class View {
     });
   }
 
- 
-
+  //binds menu events, resets board, displays menu, binds game play events
   startNewGame(){
     this.bindMenuEvents();
     this.resetBoard();
@@ -160,11 +160,10 @@ class View {
   endGame(){
       let winner = this.game.winner();
       let win_msg = ''
-      if(winner === null){
+      if(winner === null){ 
         win_msg = 'Tie Game';
       }
-      else{
-        //fade in
+      else{ //if not a tie, display the 3 winning marks
         this.highlightWinningSquares(winner);
         win_msg = winner + ' Wins!';
       }
@@ -172,7 +171,9 @@ class View {
       $('.winner-modal').fadeIn(1000);
   }
 
+  //highlights winning squares ()
   highlightWinningSquares(winnerMark){
+    winnerMark = winnerMark || this.game.winner();
     let winningPositions = this.game.winningPositions(winnerMark);
     for(let i=0; i< winningPositions.length; i++){
       let winPos = winningPositions[i];
@@ -181,7 +182,7 @@ class View {
     }
   }
 
-  //
+  //check if game is over, if it is, call endGame()
   checkForWin(){
     if(this.game.isOver()){
       this.endGame();
@@ -190,12 +191,13 @@ class View {
     return false;
   }
 
+  //unbinds all set events
   unbindEvents(){
     const $eventSelectors = $(".pos, .unplayed, .mark, li, button, .start-game-button, .new-game-button, ul, .row");
     $eventSelectors.off( "mouseenter mouseleave click");
   }
 
-  //reset board display (all squares blank)
+  //reset board display (all squares blank) -- removes classes for display, adds 'hidden class' to end of game display modal (winner-modal)
   resetBoard(){
     const $square = $(".pos, .unplayed, .mark");
     const $pos = $('.pos');
@@ -206,15 +208,15 @@ class View {
     $square.text('');
   }
 
+  //helper to make AI move
   makeAIMove(){
     //if(this.game.ai) called before calling this
-    //need to check if playing with AI first, then check if its ai's turn
+    //**need to check if playing with AI first, then check if its ai's turn
     if( this.game.ai && (this.game.currPlayerMark === this.game.aiMark) ){
         let aiMove  = this.game.aiPlayer.getBestMove(this.game.board);
         let aiMark = this.game.currPlayerMark;
         let $aiSquare = $(`[data-pos= "${aiMove}"]`);
         //checks if valid move (unplayed square)
-        //let txt = $aiSquare.child;
         if($aiSquare.hasClass("unplayed")){
           $aiSquare.removeClass('unplayed');
           $('.pos').removeClass(aiMark + "-hovered");
@@ -225,6 +227,7 @@ class View {
         }
       }
   }
+
   //add X or O mark as span inside of li (.pos class)
   addMark($square, mark){
     let markTxt = $("<span>").addClass('mark').text(mark).fadeIn(500);
@@ -247,13 +250,12 @@ class View {
   hideMenu(){
     $('.game-menu').fadeOut();
   }
-
   showMenu(){
     console.log('showMenu');
     $('.game-menu').fadeIn();
   }
 
-
+  //hide/show AI options in Menu
   hideAIMenu(){
       $('.play-AI-options').addClass('hidden');
   }

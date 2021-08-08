@@ -14,28 +14,31 @@ class Game{
         }
         this.currPlayerMark = Board.marks[0];
     }
-
+    //check if gameOver
     isOver(){
         return this.board.gameOver();
     }
-
+    //returns array of winningPositions
     winningPositions(mark){
         if (this.winner() !== null){
             return this.board.winningPositions(mark);
         }
     }
-
+    //returns winner (from current instance of board)
     winner(){
         return this.board.winner();
     }
+    //make a move on the board with current players mark and swap turns
     makeMove(pos){
         this.board.placeMark(pos, this.currPlayerMark);
         this.swapTurn();
     }
+    //helper to change currPlayer mark (X or O)
     swapTurn(){
         this.currPlayerMark = this.currPlayerMark === Board.marks[0] ?  Board.marks[1] : Board.marks[0];
     }
 
+    //checks for valid console input
     validInput(input){
         try{
             if(typeof(parseInt(input)) !== 'number' || isNaN(parseInt(input)) ){
@@ -51,6 +54,7 @@ class Game{
         }
     }
 
+    //run game for console play
     run(reader, completionCallback){
         this.getMove(reader, (pos) => {
             try{
@@ -84,12 +88,14 @@ class Game{
             }
         });
     }
+    //check if input is valid as a position
     validPositionInput(input){
         if(!(Number.isNaN(input[0]) || Number.isNaN(input[1]))){
             return true;
         }
     }
 
+    //gets a move through reader (console input)
     getMove(reader, callback){
         let aiMove = false;
         let aiPos = [];
@@ -127,6 +133,7 @@ class Game{
         }
     }
 
+    //returns array of all valid positions on the board
     validMoves(){
         return this.board.validPositions();
     }
