@@ -196,3 +196,6 @@ input[type="button"] {
     cursor: pointer;
     color: lightgray;
 }
+.wait-cursor{
+    cursor: wait;
+}

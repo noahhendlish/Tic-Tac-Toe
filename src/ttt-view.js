@@ -5,7 +5,9 @@ class View {
     this.$el = $el;
     this.game = game;
     this.setupBoard();
+    this.playing = false;
   }
+
   //binds menu events
   bindMenuEvents(){
   //enables toggling of AI menu
@@ -18,7 +20,7 @@ class View {
   }
 
   //binds game play events
-  bindGameEvents(){
+  bindGamePlayEvents(){
     this.makeMoveEvent();
     this.playerHoverEvent();
   }
@@ -39,6 +41,7 @@ class View {
     this.replayGameEvent();
 
   }
+
   select2Events(){
     // select2 (drop-downs) event handlers (allows control over options selector width and removes the default search from drop down)
     $('.selection-dropdown').select2({
@@ -49,8 +52,11 @@ class View {
   //event handler for new game (from main menu)
   startButtonEvent(){
     $('.start-game-button').on('click',  (e)=> {
-        //e.preventDefault();
-        this.hideMenu();
+      if(this.playing === false){
+        e.preventDefault();
+        setTimeout(()=>{
+          this.fadeOutMenu();
+        }, 1);
         let $opponent = $('#opponent').val();
         if($opponent === 'Human'){
           this.playHuman();
@@ -60,77 +66,74 @@ class View {
           let aiMark = (mark === 'X') ? 'O' : 'X';
           this.playAI(aiMark, aiLevel);
         }
+      }
     });
   }
+
   //event handler for new game (after game over)
   replayGameEvent(){
-    $('.new-game-button').on('click', ()=>{
-      $('.winner-modal').fadeOut(500, ()=>{
-        $('.mark').fadeOut(500);
-        $('.pos').fadeTo(400, 0.4,()=>{
-          this.resetBoard();
-          $('.pos').fadeTo(100, 1, ()=>{
-          this.showMenu();
+    $('.new-game-button').on('click', (e)=>{
+      if (this.playing === false){
+        e.preventDefault();
+        $('.winner-modal').fadeOut(500, ()=>{
+          $('.mark').fadeOut(500);
+          $('.pos').fadeTo(400, 0.4,()=>{
+            this.resetBoard();
+            $('.pos').fadeTo(100, 1, ()=>{
+            this.fadeInMenu();
+            });
           });
         });
-      });
+      }
     });
   }
 
   //change square on grid after current player makes a move (display mark with associated color)
   makeMoveEvent() {
     $('ul.row').on('click', 'li.pos', (event)=>{
-      const $square = $(event.currentTarget);
-      if(!(this.game.isOver())){
-        const pos = $square.attr('data-pos');
-        const selected_position = [parseInt(pos[0]), parseInt(pos[2])];
-        let playerMark = this.game.currPlayerMark;
-        //let $dataPosSq = $(`[data-pos= "${selected_position}"]`); //-- another way of getting currentTarget
-        //checks if valid move (unplayed square)
-        if($square.hasClass("unplayed")){
-          $square.removeClass('unplayed');
-          $('.pos').removeClass(playerMark + "-hovered");
-          $square.addClass(playerMark + "-played");
-          this.addMark($square, playerMark);
-          this.game.makeMove(selected_position);
-          let win = this.checkForWin();
-          if(!(win) && this.game.ai){
-              this.makeAIMove();
+      if (this.playing === true){ //check if playing game
+        const $square = $(event.currentTarget);
+        if(!(this.game.isOver())){
+          const pos = $square.attr('data-pos');
+          const selected_position = [parseInt(pos[0]), parseInt(pos[2])];
+          let playerMark = this.game.currPlayerMark;
+          //let $dataPosSq = $(`[data-pos= "${selected_position}"]`); //-- another way of getting currentTarget
+          //checks if valid move (unplayed square)
+          if($square.hasClass("unplayed")){
+            $square.removeClass('unplayed');
+            $('.pos').removeClass(playerMark + "-hovered");
+            $square.addClass(playerMark + "-played");
+            this.addMark($square, playerMark);
+            this.game.makeMove(selected_position);
+            let win = this.checkForWin();
+            if(!(win) && this.game.ai){
+                this.makeAIMove();
+            }
           }
         }
       }
     });
   }
-
   //change each square while current player hovers over it (display mark [x or o] with associated color [red or blue]
   playerHoverEvent(){
     $('ul.row').on('mouseenter', 'li.unplayed', (event)=>{
-      const $square = $(event.currentTarget);
-      let playerMark = this.game.currPlayerMark;
-      if(!(this.game.isOver()) && !(this.aiMove(this.game))){
-          $square.addClass(playerMark + "-hovered");
+      if (this.playing === true){
+        const $square = $(event.currentTarget);
+        let playerMark = this.game.currPlayerMark;
+        if(!(this.game.isOver()) && !(this.aiMove(this.game))){
+            $square.addClass(playerMark + "-hovered");
+      }
       }
     });
     $('ul.row').on('mouseleave', 'li.unplayed', (event)=>{
-      const $square = $(event.currentTarget);
-      let playerMark = this.game.currPlayerMark;
-      if( !(this.game.isOver()) && !(this.aiMove(this.game))){
-          $square.removeClass(playerMark + "-hovered");
+      if (this.playing === true){
+        const $square = $(event.currentTarget);
+        let playerMark = this.game.currPlayerMark;
+        if( !(this.game.isOver()) && !(this.aiMove(this.game))){
+            $square.removeClass(playerMark + "-hovered");
+        }
       }
     });
-  }
-
-  //helper for new game against AI
-  playAI(aiMark, aiLevel){
-    this.game = new Game(true, aiMark, aiLevel);
-    if(aiMark === 'X'){ //X plays first, if AI first, ai makes move
-      this.makeAIMove();
-    }
-  }
-
-  //helper for new game against human
-  playHuman(){
-    this.game = new Game();
   }
 
   //only show choose player mark/ ai level if opponent is AI in menu
@@ -138,7 +141,6 @@ class View {
     let that = this;
     let $opponent_selection = $('#opponent');
     $opponent_selection.change(function(){
-      console.log('change');
       if($(this).val() === 'AI'){
         that.showAIMenu();
       }
@@ -152,23 +154,39 @@ class View {
   startNewGame(){
     this.bindMenuEvents();
     this.resetBoard();
-    this.showMenu();
-    this.bindGameEvents();
+    this.fadeInMenu();
+    this.bindGamePlayEvents();
+  }
+    //helper for new game against AI
+  playAI(aiMark, aiLevel){
+    this.game = new Game(true, aiMark, aiLevel);
+    this.playing = true;
+    if(aiMark === 'X'){ //X plays first, if AI first, ai makes move
+      this.makeAIMove();
+    }
+  }
+
+  //helper for new game against human
+  playHuman(){
+    this.game = new Game();
+    this.playing = true;
   }
 
   //end game-- display winner at end of game (then resets game-- loads menu)
   endGame(){
+      this.playing = false;
       let winner = this.game.winner();
       let win_msg = ''
-      if(winner === null){ 
+      if(winner === null){
         win_msg = 'Tie Game';
       }
       else{ //if not a tie, display the 3 winning marks
         this.highlightWinningSquares(winner);
         win_msg = winner + ' Wins!';
       }
+      this.clicks = 0;
       $('.winner-header').text(win_msg);
-      $('.winner-modal').fadeIn(1000);
+      $('.winner-modal').fadeIn(500);
   }
 
   //highlights winning squares ()
@@ -178,7 +196,7 @@ class View {
     for(let i=0; i< winningPositions.length; i++){
       let winPos = winningPositions[i];
       let $winPos = $(`[data-pos= "${winPos}"]`);
-      $winPos.addClass(winnerMark + "-wins").fadeIn(1000);
+      $winPos.addClass(winnerMark + "-wins").fadeIn(500);
     }
   }
 
@@ -189,12 +207,6 @@ class View {
       return true;
     }
     return false;
-  }
-
-  //unbinds all set events
-  unbindEvents(){
-    const $eventSelectors = $(".pos, .unplayed, .mark, li, button, .start-game-button, .new-game-button, ul, .row");
-    $eventSelectors.off( "mouseenter mouseleave click");
   }
 
   //reset board display (all squares blank) -- removes classes for display, adds 'hidden class' to end of game display modal (winner-modal)
@@ -212,7 +224,7 @@ class View {
   makeAIMove(){
     //if(this.game.ai) called before calling this
     //**need to check if playing with AI first, then check if its ai's turn
-    if( this.game.ai && (this.game.currPlayerMark === this.game.aiMark) ){
+    if( this.playing && this.game.ai && (this.game.currPlayerMark === this.game.aiMark) ){
         let aiMove  = this.game.aiPlayer.getBestMove(this.game.board);
         let aiMark = this.game.currPlayerMark;
         let $aiSquare = $(`[data-pos= "${aiMove}"]`);
@@ -231,13 +243,7 @@ class View {
   //add X or O mark as span inside of li (.pos class)
   addMark($square, mark){
     let markTxt = $("<span>").addClass('mark').text(mark).fadeIn(500);
-    $square.append(markTxt);
-  }
-  //flash fadeinfadeout on element
-  flashFade(el){
-    el.fadeOut(1000,function(){
-      el.fadeIn(1000);
-    });
+      $square. append(markTxt);
   }
 
   //helper for player hover (determine if it is aiMove or not)
@@ -248,10 +254,16 @@ class View {
 
   //hide/show main menu
   hideMenu(){
-    $('.game-menu').fadeOut();
+    $('.game-menu').addClass('hidden');
   }
   showMenu(){
-    console.log('showMenu');
+    $('.game-menu').removeClass('hidden');
+  }
+  //hide/show main menu with fade animation
+  fadeOutMenu(){
+    $('.game-menu').fadeOut();
+  }
+  fadeInMenu(){
     $('.game-menu').fadeIn();
   }
 
@@ -265,7 +277,6 @@ class View {
 
   //setup blank board
   setupBoard() {
-    console.log('setupBoard');
     const $grid = $('<div>').addClass('grid');
     for(let rowIdx=0; rowIdx <3; rowIdx++){
       const $row = $("<ul>").addClass('row').attr('data-rowNum', rowIdx);
@@ -276,6 +287,16 @@ class View {
       $grid.append($row);
     }
     this.$el.append($grid);
+  }
+
+   unbindGamePlayEvents(){
+    const $eventSelectors = $(".pos, .unplayed, .mark, li, ul, .row")
+    $eventSelectors.off( "mouseenter mouseleave click");
+  }
+  //unbinds all set events
+  unbindEvents(){
+    const $eventSelectors = $(".pos, .unplayed, .mark, li, button, .start-game-button, .new-game-button, ul, .row");
+    $eventSelectors.off( "mousedown mouseup mouseenter mouseleave click");
   }
 }
 
